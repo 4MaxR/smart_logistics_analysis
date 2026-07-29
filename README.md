@@ -332,3 +332,11 @@ smart_logistics_analysis/
 
 This analysis was conducted as part of a supply chain optimization initiative. The findings and recommendations are based on comprehensive data analysis and predictive modeling of over 1,000 logistics events throughout 2024.
 
+## 👤 Author
+
+**Mustafa Al Rouby**
+
+- LinkedIn: *[Mustafa AlRouby](www.linkedin.com/in/mustafa-al-rouby-20218b171)*
+- GitHub: *[4MaxR](https://github.com/4MaxR)*
+- Portfolio: *[Website](https://mostafaalrouby.com/#home)*
+
