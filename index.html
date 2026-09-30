@@ -1,503 +1,1010 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-<meta charset="UTF-8" />
-<meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Smart Logistics — Delay Analysis Dashboard</title>
-<script src="plotly.min.js"></script>
-<script>
-  if (!window.Plotly) {
-    document.write('<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.35.2/plotly.min.js"><\/script>');
-  }
-</script>
-<style>
-  :root {
-    --bg: #0b1220;
-    --surface: #131c2e;
-    --surface-2: #18233a;
-    --border: #22304a;
-    --text: #e2e8f0;
-    --muted: #8b9bb4;
-    --accent: #38bdf8;
-    --accent-2: #34d399;
-    --warn: #f59e0b;
-    --danger: #f87171;
-    --purple: #a78bfa;
-  }
-  * { box-sizing: border-box; }
-  body {
-    margin: 0;
-    font-family: "Segoe UI", system-ui, -apple-system, Roboto, Helvetica, Arial, sans-serif;
-    background: var(--bg);
-    color: var(--text);
-    line-height: 1.5;
-    -webkit-font-smoothing: antialiased;
-  }
-  a { color: var(--accent); text-decoration: none; }
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Smart Logistics — Delay Analysis Dashboard</title>
+    <script src="dashboard/plotly.min.js"></script>
+    <script>
+      if (!window.Plotly) {
+        document.write(
+          '<script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.35.2/plotly.min.js"><\/script>',
+        );
+      }
+    </script>
+    <style>
+      :root {
+        --bg: #0b1220;
+        --surface: #131c2e;
+        --surface-2: #18233a;
+        --border: #22304a;
+        --text: #e2e8f0;
+        --muted: #8b9bb4;
+        --accent: #38bdf8;
+        --accent-2: #34d399;
+        --warn: #f59e0b;
+        --danger: #f87171;
+        --purple: #a78bfa;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        font-family:
+          "Segoe UI",
+          system-ui,
+          -apple-system,
+          Roboto,
+          Helvetica,
+          Arial,
+          sans-serif;
+        background: var(--bg);
+        color: var(--text);
+        line-height: 1.5;
+        -webkit-font-smoothing: antialiased;
+      }
+      a {
+        color: var(--accent);
+        text-decoration: none;
+      }
 
-  /* ---------- Header ---------- */
-  header {
-    padding: 40px 32px 28px;
-    background:
-      radial-gradient(1200px 400px at 20% -10%, rgba(56,189,248,0.18), transparent 60%),
-      radial-gradient(900px 350px at 85% 0%, rgba(167,139,250,0.14), transparent 60%),
-      var(--bg);
-    border-bottom: 1px solid var(--border);
-  }
-  .header-inner { max-width: 1200px; margin: 0 auto; }
-  .eyebrow {
-    display: inline-block;
-    font-size: 12px; font-weight: 600; letter-spacing: 0.14em; text-transform: uppercase;
-    color: var(--accent);
-    background: rgba(56,189,248,0.10);
-    border: 1px solid rgba(56,189,248,0.30);
-    padding: 5px 12px; border-radius: 999px; margin-bottom: 16px;
-  }
-  h1 { margin: 0 0 8px; font-size: 30px; font-weight: 700; letter-spacing: -0.01em; }
-  .subtitle { color: var(--muted); font-size: 15px; margin: 0 0 18px; max-width: 720px; }
-  .badges { display: flex; flex-wrap: wrap; gap: 10px; }
-  .badge {
-    font-size: 13px; color: var(--text);
-    background: var(--surface-2); border: 1px solid var(--border);
-    padding: 6px 14px; border-radius: 8px;
-  }
-  .badge b { color: var(--accent); font-weight: 600; }
+      /* ---------- Header ---------- */
+      header {
+        padding: 40px 32px 28px;
+        background:
+          radial-gradient(
+            1200px 400px at 20% -10%,
+            rgba(56, 189, 248, 0.18),
+            transparent 60%
+          ),
+          radial-gradient(
+            900px 350px at 85% 0%,
+            rgba(167, 139, 250, 0.14),
+            transparent 60%
+          ),
+          var(--bg);
+        border-bottom: 1px solid var(--border);
+      }
+      .header-inner {
+        max-width: 1200px;
+        margin: 0 auto;
+      }
+      .eyebrow {
+        display: inline-block;
+        font-size: 12px;
+        font-weight: 600;
+        letter-spacing: 0.14em;
+        text-transform: uppercase;
+        color: var(--accent);
+        background: rgba(56, 189, 248, 0.1);
+        border: 1px solid rgba(56, 189, 248, 0.3);
+        padding: 5px 12px;
+        border-radius: 999px;
+        margin-bottom: 16px;
+      }
+      h1 {
+        margin: 0 0 8px;
+        font-size: 30px;
+        font-weight: 700;
+        letter-spacing: -0.01em;
+      }
+      .subtitle {
+        color: var(--muted);
+        font-size: 15px;
+        margin: 0 0 18px;
+        max-width: 720px;
+      }
+      .badges {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+      }
+      .badge {
+        font-size: 13px;
+        color: var(--text);
+        background: var(--surface-2);
+        border: 1px solid var(--border);
+        padding: 6px 14px;
+        border-radius: 8px;
+      }
+      .badge b {
+        color: var(--accent);
+        font-weight: 600;
+      }
 
-  /* ---------- Layout ---------- */
-  main { max-width: 1200px; margin: 0 auto; padding: 28px 32px 60px; }
-  section { margin-bottom: 40px; }
-  .section-title {
-    font-size: 13px; font-weight: 600; letter-spacing: 0.1em; text-transform: uppercase;
-    color: var(--muted); margin: 0 0 6px;
-  }
-  .section-heading { font-size: 20px; font-weight: 650; margin: 0 0 4px; }
-  .section-desc { color: var(--muted); font-size: 14px; margin: 0 0 16px; max-width: 760px; }
+      /* ---------- Layout ---------- */
+      main {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 28px 32px 60px;
+      }
+      section {
+        margin-bottom: 40px;
+      }
+      .section-title {
+        font-size: 13px;
+        font-weight: 600;
+        letter-spacing: 0.1em;
+        text-transform: uppercase;
+        color: var(--muted);
+        margin: 0 0 6px;
+      }
+      .section-heading {
+        font-size: 20px;
+        font-weight: 650;
+        margin: 0 0 4px;
+      }
+      .section-desc {
+        color: var(--muted);
+        font-size: 14px;
+        margin: 0 0 16px;
+        max-width: 760px;
+      }
 
-  /* ---------- KPI cards ---------- */
-  .kpi-grid {
-    display: grid; grid-template-columns: repeat(6, 1fr); gap: 14px;
-  }
-  .kpi {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 18px 16px; position: relative; overflow: hidden;
-  }
-  .kpi::before {
-    content: ""; position: absolute; inset: 0 0 auto 0; height: 3px;
-    background: var(--kpi-color, var(--accent));
-  }
-  .kpi .label { font-size: 12px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 8px; }
-  .kpi .value { font-size: 28px; font-weight: 700; letter-spacing: -0.02em; color: var(--kpi-color, var(--text)); }
-  .kpi .sub { font-size: 12px; color: var(--muted); margin-top: 4px; }
+      /* ---------- KPI cards ---------- */
+      .kpi-grid {
+        display: grid;
+        grid-template-columns: repeat(6, 1fr);
+        gap: 14px;
+      }
+      .kpi {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 18px 16px;
+        position: relative;
+        overflow: hidden;
+      }
+      .kpi::before {
+        content: "";
+        position: absolute;
+        inset: 0 0 auto 0;
+        height: 3px;
+        background: var(--kpi-color, var(--accent));
+      }
+      .kpi .label {
+        font-size: 12px;
+        color: var(--muted);
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        margin-bottom: 8px;
+      }
+      .kpi .value {
+        font-size: 28px;
+        font-weight: 700;
+        letter-spacing: -0.02em;
+        color: var(--kpi-color, var(--text));
+      }
+      .kpi .sub {
+        font-size: 12px;
+        color: var(--muted);
+        margin-top: 4px;
+      }
 
-  /* ---------- Chart cards ---------- */
-  .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-  .grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 16px; }
-  .card {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px 18px 10px;
-  }
-  .card h3 { margin: 0 0 4px; font-size: 15px; font-weight: 600; }
-  .card .note { color: var(--muted); font-size: 12.5px; margin: 0 0 6px; }
-  .chart { width: 100%; }
+      /* ---------- Chart cards ---------- */
+      .grid-2 {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .grid-3 {
+        display: grid;
+        grid-template-columns: 1fr 1fr 1fr;
+        gap: 16px;
+      }
+      .card {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px 18px 10px;
+      }
+      .card h3 {
+        margin: 0 0 4px;
+        font-size: 15px;
+        font-weight: 600;
+      }
+      .card .note {
+        color: var(--muted);
+        font-size: 12.5px;
+        margin: 0 0 6px;
+      }
+      .chart {
+        width: 100%;
+      }
 
-  /* ---------- Insight callout ---------- */
-  .insight {
-    background: rgba(56,189,248,0.06);
-    border: 1px solid rgba(56,189,248,0.28);
-    border-left: 3px solid var(--accent);
-    border-radius: 10px; padding: 14px 18px; margin: 0 0 20px;
-    font-size: 14px; color: var(--text);
-  }
-  .insight b { color: var(--accent); }
+      /* ---------- Insight callout ---------- */
+      .insight {
+        background: rgba(56, 189, 248, 0.06);
+        border: 1px solid rgba(56, 189, 248, 0.28);
+        border-left: 3px solid var(--accent);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 0 0 20px;
+        font-size: 14px;
+        color: var(--text);
+      }
+      .insight b {
+        color: var(--accent);
+      }
 
-  .warn-note {
-    background: rgba(245,158,11,0.06);
-    border: 1px solid rgba(245,158,11,0.30);
-    border-left: 3px solid var(--warn);
-    border-radius: 10px; padding: 14px 18px; margin: 16px 0 0;
-    font-size: 13.5px;
-  }
-  .warn-note b { color: var(--warn); }
+      .warn-note {
+        background: rgba(245, 158, 11, 0.06);
+        border: 1px solid rgba(245, 158, 11, 0.3);
+        border-left: 3px solid var(--warn);
+        border-radius: 10px;
+        padding: 14px 18px;
+        margin: 16px 0 0;
+        font-size: 13.5px;
+      }
+      .warn-note b {
+        color: var(--warn);
+      }
 
-  /* ---------- Methodology ---------- */
-  .method {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 22px 24px;
-  }
-  .method h3 { margin: 0 0 10px; font-size: 16px; }
-  .method p, .method li { color: var(--muted); font-size: 14px; }
-  .method ul { margin: 8px 0 0; padding-left: 20px; }
+      /* ---------- Methodology ---------- */
+      .method {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 22px 24px;
+      }
+      .method h3 {
+        margin: 0 0 10px;
+        font-size: 16px;
+      }
+      .method p,
+      .method li {
+        color: var(--muted);
+        font-size: 14px;
+      }
+      .method ul {
+        margin: 8px 0 0;
+        padding-left: 20px;
+      }
 
-  /* ---------- Recommendations ---------- */
-  .rec-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-  .rec {
-    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
-    padding: 18px;
-  }
-  .rec h4 { margin: 0 0 8px; font-size: 14px; color: var(--accent-2); }
-  .rec p { margin: 0; color: var(--muted); font-size: 13.5px; }
-  .roi {
-    display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; margin-bottom: 20px;
-  }
-  .roi .kpi { --kpi-color: var(--accent-2); }
+      /* ---------- Recommendations ---------- */
+      .rec-grid {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 16px;
+      }
+      .rec {
+        background: var(--surface);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 18px;
+      }
+      .rec h4 {
+        margin: 0 0 8px;
+        font-size: 14px;
+        color: var(--accent-2);
+      }
+      .rec p {
+        margin: 0;
+        color: var(--muted);
+        font-size: 13.5px;
+      }
+      .roi {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 14px;
+        margin-bottom: 20px;
+      }
+      .roi .kpi {
+        --kpi-color: var(--accent-2);
+      }
 
-  footer {
-    border-top: 1px solid var(--border); padding: 22px 32px; color: var(--muted);
-    font-size: 12.5px; text-align: center;
-  }
+      footer {
+        border-top: 1px solid var(--border);
+        padding: 22px 32px;
+        color: var(--muted);
+        font-size: 12.5px;
+        text-align: center;
+      }
 
-  @media (max-width: 960px) {
-    .kpi-grid { grid-template-columns: repeat(3, 1fr); }
-    .grid-2, .grid-3 { grid-template-columns: 1fr; }
-    .rec-grid, .roi { grid-template-columns: 1fr 1fr; }
-  }
-  @media (max-width: 600px) {
-    .kpi-grid { grid-template-columns: repeat(2, 1fr); }
-    .rec-grid, .roi { grid-template-columns: 1fr; }
-    header { padding: 28px 18px; }
-    main { padding: 20px 18px 40px; }
-  }
-</style>
-</head>
-<body>
-
-<header>
-  <div class="header-inner">
-    <span class="eyebrow">Supply Chain Analytics · 2024</span>
-    <h1>Smart Logistics — Delay Analysis Dashboard</h1>
-    <p class="subtitle">An exploratory and predictive analysis of a year of shipment data to surface the drivers of delivery delays, benchmark a delay-prediction model, and prioritize operational improvements.</p>
-    <div class="badges" id="badges"></div>
-  </div>
-</header>
-
-<main id="main">
-  <!-- KPI cards -->
-  <section>
-    <div class="section-title">Headline KPIs</div>
-    <div class="kpi-grid" id="kpi-grid"></div>
-  </section>
-
-  <!-- EDA: status + trucks -->
-  <section>
-    <p class="section-title">Exploratory Analysis</p>
-    <h2 class="section-heading">Where delays concentrate</h2>
-    <p class="section-desc">Shipment mix and per-asset delay rates reveal which trucks and conditions carry the most operational risk.</p>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Shipment status distribution</h3>
-        <p class="note">Delivered vs. In Transit vs. Delayed (n = 1,000)</p>
-        <div class="chart" id="chart-status" style="height:300px"></div>
+      @media (max-width: 960px) {
+        .kpi-grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+        .grid-2,
+        .grid-3 {
+          grid-template-columns: 1fr;
+        }
+        .rec-grid,
+        .roi {
+          grid-template-columns: 1fr 1fr;
+        }
+      }
+      @media (max-width: 600px) {
+        .kpi-grid {
+          grid-template-columns: repeat(2, 1fr);
+        }
+        .rec-grid,
+        .roi {
+          grid-template-columns: 1fr;
+        }
+        header {
+          padding: 28px 18px;
+        }
+        main {
+          padding: 20px 18px 40px;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <header>
+      <div class="header-inner">
+        <span class="eyebrow">Supply Chain Analytics · 2024</span>
+        <h1>Smart Logistics — Delay Analysis Dashboard</h1>
+        <p class="subtitle">
+          An exploratory and predictive analysis of a year of shipment data to
+          surface the drivers of delivery delays, benchmark a delay-prediction
+          model, and prioritize operational improvements.
+        </p>
+        <div class="badges" id="badges"></div>
       </div>
-      <div class="card">
-        <h3>Delay rate by truck</h3>
-        <p class="note">Sorted by delay rate — % of trips delayed per asset</p>
-        <div class="chart" id="chart-asset" style="height:300px"></div>
-      </div>
-    </div>
-  </section>
+    </header>
 
-  <!-- EDA: reasons + monthly -->
-  <section>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Delay reasons</h3>
-        <p class="note">Count of delayed shipments by recorded reason</p>
-        <div class="chart" id="chart-reasons" style="height:300px"></div>
-      </div>
-      <div class="card">
-        <h3>Monthly delay trend</h3>
-        <p class="note">Delay rate by month — seasonality signal</p>
-        <div class="chart" id="chart-monthly" style="height:300px"></div>
-      </div>
-    </div>
-  </section>
+    <main id="main">
+      <!-- KPI cards -->
+      <section>
+        <div class="section-title">Headline KPIs</div>
+        <div class="kpi-grid" id="kpi-grid"></div>
+      </section>
 
-  <!-- Operational drivers -->
-  <section>
-    <h2 class="section-heading">Operational &amp; environmental drivers</h2>
-    <div class="insight" id="traffic-insight"></div>
-    <div class="grid-3">
-      <div class="card">
-        <h3>Traffic status</h3>
-        <p class="note">Delay rate by traffic condition</p>
-        <div class="chart" id="chart-traffic" style="height:280px"></div>
-      </div>
-      <div class="card">
-        <h3>Temperature</h3>
-        <p class="note">Delay rate by temperature band</p>
-        <div class="chart" id="chart-temp" style="height:280px"></div>
-      </div>
-      <div class="card">
-        <h3>Humidity</h3>
-        <p class="note">Delay rate by humidity band</p>
-        <div class="chart" id="chart-hum" style="height:280px"></div>
-      </div>
-    </div>
-  </section>
+      <!-- EDA: status + trucks -->
+      <section>
+        <p class="section-title">Exploratory Analysis</p>
+        <h2 class="section-heading">Where delays concentrate</h2>
+        <p class="section-desc">
+          Shipment mix and per-asset delay rates reveal which trucks and
+          conditions carry the most operational risk.
+        </p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Shipment status distribution</h3>
+            <p class="note">Delivered vs. In Transit vs. Delayed (n = 1,000)</p>
+            <div class="chart" id="chart-status" style="height: 300px"></div>
+          </div>
+          <div class="card">
+            <h3>Delay rate by truck</h3>
+            <p class="note">
+              Sorted by delay rate — % of trips delayed per asset
+            </p>
+            <div class="chart" id="chart-asset" style="height: 300px"></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- Modeling -->
-  <section>
-    <p class="section-title">Predictive Modeling</p>
-    <h2 class="section-heading">Delay-prediction model</h2>
-    <p class="section-desc">Four classifiers benchmarked on an 80/20 train/test split. All metrics are recomputed on the current dataset using a leakage-free feature set.</p>
-    <div class="grid-2">
-      <div class="card">
-        <h3>Model performance comparison</h3>
-        <p class="note">Accuracy, precision, recall, F1 and AUC-ROC</p>
-        <div class="chart" id="chart-models" style="height:340px"></div>
-      </div>
-      <div class="card">
-        <h3>Feature importance</h3>
-        <p class="note">Random Forest — top predictors of delay</p>
-        <div class="chart" id="chart-features" style="height:340px"></div>
-      </div>
-    </div>
-  </section>
+      <!-- EDA: reasons + monthly -->
+      <section>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Delay reasons</h3>
+            <p class="note">Count of delayed shipments by recorded reason</p>
+            <div class="chart" id="chart-reasons" style="height: 300px"></div>
+          </div>
+          <div class="card">
+            <h3>Monthly delay trend</h3>
+            <p class="note">Delay rate by month — seasonality signal</p>
+            <div class="chart" id="chart-monthly" style="height: 300px"></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- Methodology -->
-  <section>
-    <div class="method">
-      <h3>Methodology &amp; data-quality notes</h3>
-      <ul>
-        <li><b>Source:</b> <code>data/raw/smart_logistics_dataset.csv</code> — 1,000 shipment records across 10 trucks, Jan 01 – Dec 30, 2024. Every figure on this dashboard is recomputed from that file.</li>
-        <li><b>Target leakage (corrected):</b> <code>Shipment_Status = "Delayed"</code> is delayed 100% of the time (350/350), and <code>Logistics_Delay_Reason</code> only exists when a delay occurred. Including either as a predictor lets a model trivially reach ~100% accuracy — so both were <b>excluded</b> from the model.</li>
-        <li><b>Leakage-free result:</b> the honest benchmark is <b>Random Forest at 78.0% accuracy / 0.794 AUC</b>, not the ~84% figure in the original README (which predates the current dataset and included leaky features).</li>
-        <li><b>Data nuance:</b> 263 shipments (26%) have no recorded delay reason (stored as the literal string <code>"None"</code>); these are shown as "No recorded reason", not dropped.</li>
-        <li><b>Traffic signal:</b> <code>Traffic_Status = "Heavy"</code> co-occurs with delay 100% of the time in this dataset — a strong (near-deterministic) signal that dominates feature importance.</li>
-      </ul>
-    </div>
-  </section>
+      <!-- Operational drivers -->
+      <section>
+        <h2 class="section-heading">Operational &amp; environmental drivers</h2>
+        <div class="insight" id="traffic-insight"></div>
+        <div class="grid-3">
+          <div class="card">
+            <h3>Traffic status</h3>
+            <p class="note">Delay rate by traffic condition</p>
+            <div class="chart" id="chart-traffic" style="height: 280px"></div>
+          </div>
+          <div class="card">
+            <h3>Temperature</h3>
+            <p class="note">Delay rate by temperature band</p>
+            <div class="chart" id="chart-temp" style="height: 280px"></div>
+          </div>
+          <div class="card">
+            <h3>Humidity</h3>
+            <p class="note">Delay rate by humidity band</p>
+            <div class="chart" id="chart-hum" style="height: 280px"></div>
+          </div>
+        </div>
+      </section>
 
-  <!-- ROI + recommendations -->
-  <section>
-    <p class="section-title">Business Impact</p>
-    <h2 class="section-heading">ROI &amp; recommendations</h2>
-    <p class="section-desc">Directional business guidance. Cost figures are illustrative planning estimates, not outputs of the dataset.</p>
-    <div class="roi" id="roi-grid"></div>
-    <div class="rec-grid" id="rec-grid"></div>
-  </section>
-</main>
+      <!-- Modeling -->
+      <section>
+        <p class="section-title">Predictive Modeling</p>
+        <h2 class="section-heading">Delay-prediction model</h2>
+        <p class="section-desc">
+          Four classifiers benchmarked on an 80/20 train/test split. All metrics
+          are recomputed on the current dataset using a leakage-free feature
+          set.
+        </p>
+        <div class="grid-2">
+          <div class="card">
+            <h3>Model performance comparison</h3>
+            <p class="note">Accuracy, precision, recall, F1 and AUC-ROC</p>
+            <div class="chart" id="chart-models" style="height: 340px"></div>
+          </div>
+          <div class="card">
+            <h3>Feature importance</h3>
+            <p class="note">Random Forest — top predictors of delay</p>
+            <div class="chart" id="chart-features" style="height: 340px"></div>
+          </div>
+        </div>
+      </section>
 
-<footer>
-  Generated from <code>smart_logistics_dataset.csv</code> · Interactive dashboard built with Plotly.js · Recomputed figures, not README-reported values.
-</footer>
+      <!-- Methodology -->
+      <section>
+        <div class="method">
+          <h3>Methodology &amp; data-quality notes</h3>
+          <ul>
+            <li>
+              <b>Source:</b> <code>data/raw/smart_logistics_dataset.csv</code> —
+              1,000 shipment records across 10 trucks, Jan 01 – Dec 30, 2024.
+              Every figure on this dashboard is recomputed from that file.
+            </li>
+            <li>
+              <b>Target leakage (corrected):</b>
+              <code>Shipment_Status = "Delayed"</code> is delayed 100% of the
+              time (350/350), and <code>Logistics_Delay_Reason</code> only
+              exists when a delay occurred. Including either as a predictor lets
+              a model trivially reach ~100% accuracy — so both were
+              <b>excluded</b> from the model.
+            </li>
+            <li>
+              <b>Leakage-free result:</b> the honest benchmark is
+              <b>Random Forest at 78.0% accuracy / 0.794 AUC</b>, not the ~84%
+              figure in the original README (which predates the current dataset
+              and included leaky features).
+            </li>
+            <li>
+              <b>Data nuance:</b> 263 shipments (26%) have no recorded delay
+              reason (stored as the literal string <code>"None"</code>); these
+              are shown as "No recorded reason", not dropped.
+            </li>
+            <li>
+              <b>Traffic signal:</b>
+              <code>Traffic_Status = "Heavy"</code> co-occurs with delay 100% of
+              the time in this dataset — a strong (near-deterministic) signal
+              that dominates feature importance.
+            </li>
+          </ul>
+        </div>
+      </section>
 
-<script src="data.js"></script>
-<script>
-(function () {
-  var D = window.SMART_LOGISTICS_DATA;
-  if (!D) { document.getElementById('main').innerHTML = '<p style="color:#f87171">Failed to load data.js</p>'; return; }
+      <!-- ROI + recommendations -->
+      <section>
+        <p class="section-title">Business Impact</p>
+        <h2 class="section-heading">ROI &amp; recommendations</h2>
+        <p class="section-desc">
+          Directional business guidance. Cost figures are illustrative planning
+          estimates, not outputs of the dataset.
+        </p>
+        <div class="roi" id="roi-grid"></div>
+        <div class="rec-grid" id="rec-grid"></div>
+      </section>
+    </main>
 
-  var accent = "#38bdf8", accent2 = "#34d399", warn = "#f59e0b", danger = "#f87171",
-      purple = "#a78bfa", muted = "#8b9bb4", grid = "#22304a", text = "#e2e8f0";
-  var transparent = "rgba(0,0,0,0)";
+    <footer>
+      Generated from <code>smart_logistics_dataset.csv</code> · Interactive
+      dashboard built with Plotly.js · Recomputed figures, not README-reported
+      values.
+    </footer>
 
-  var baseLayout = {
-    paper_bgcolor: transparent, plot_bgcolor: transparent,
-    font: { color: muted, size: 12, family: "Segoe UI, system-ui, sans-serif" },
-    margin: { l: 44, r: 16, t: 10, b: 36 },
-    xaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid },
-    yaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid },
-    legend: { font: { color: muted } },
-    hoverlabel: { bgcolor: "#18233a", font: { color: text } }
-  };
+    <script src="dashboard/data.js"></script>
+    <script>
+      (function () {
+        var D = window.SMART_LOGISTICS_DATA;
+        if (!D) {
+          document.getElementById("main").innerHTML =
+            '<p style="color:#f87171">Failed to load data.js</p>';
+          return;
+        }
 
-  function pct(v) { return v == null ? "—" : (v * 100).toFixed(1) + "%"; }
+        var accent = "#38bdf8",
+          accent2 = "#34d399",
+          warn = "#f59e0b",
+          danger = "#f87171",
+          purple = "#a78bfa",
+          muted = "#8b9bb4",
+          grid = "#22304a",
+          text = "#e2e8f0";
+        var transparent = "rgba(0,0,0,0)";
 
-  // ---------- Badges ----------
-  var b = D.context;
-  document.getElementById('badges').innerHTML =
-    '<span class="badge"><b>' + b.total_records.toLocaleString() + '</b> shipments</span>' +
-    '<span class="badge"><b>' + b.n_assets + '</b> trucks</span>' +
-    '<span class="badge"><b>' + b.date_min + '</b> → <b>' + b.date_max + '</b></span>' +
-    '<span class="badge">Target: <b>Logistics_Delay</b></span>';
+        var baseLayout = {
+          paper_bgcolor: transparent,
+          plot_bgcolor: transparent,
+          font: {
+            color: muted,
+            size: 12,
+            family: "Segoe UI, system-ui, sans-serif",
+          },
+          margin: { l: 44, r: 16, t: 10, b: 36 },
+          xaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid },
+          yaxis: { gridcolor: grid, zerolinecolor: grid, linecolor: grid },
+          legend: { font: { color: muted } },
+          hoverlabel: { bgcolor: "#18233a", font: { color: text } },
+        };
 
-  // ---------- KPI cards ----------
-  var k = D.kpis;
-  var kpis = [
-    { label: "On-time rate", value: pct(k.on_time_rate), sub: (1 - k.on_time_rate) >= 0.5 ? "below target" : "on target", color: accent2 },
-    { label: "Delay rate", value: pct(k.delay_rate), sub: "566 of 1,000 shipments", color: danger },
-    { label: "Avg waiting time", value: k.avg_waiting_min.toFixed(1) + " min", sub: "per shipment", color: warn },
-    { label: "Avg asset utilization", value: k.avg_utilization.toFixed(1) + "%", sub: "across 10 trucks", color: accent },
-    { label: "Avg inventory level", value: Math.round(k.avg_inventory).toLocaleString(), sub: "units held", color: purple },
-    { label: "Best model (acc.)", value: pct(k.best_model_accuracy), sub: k.best_model_name, color: accent2 }
-  ];
-  document.getElementById('kpi-grid').innerHTML = kpis.map(function (c) {
-    return '<div class="kpi" style="--kpi-color:' + c.color + '">' +
-      '<div class="label">' + c.label + '</div>' +
-      '<div class="value">' + c.value + '</div>' +
-      '<div class="sub">' + c.sub + '</div></div>';
-  }).join('');
+        function pct(v) {
+          return v == null ? "—" : (v * 100).toFixed(1) + "%";
+        }
 
-  // ---------- Chart helpers ----------
-  function draw(id, data, layout) {
-    var merged = JSON.parse(JSON.stringify(baseLayout));
-    for (var key in layout) merged[key] = layout[key];
-    Plotly.newPlot(id, data, merged, { displayModeBar: false, responsive: true });
-  }
+        // ---------- Badges ----------
+        var b = D.context;
+        document.getElementById("badges").innerHTML =
+          '<span class="badge"><b>' +
+          b.total_records.toLocaleString() +
+          "</b> shipments</span>" +
+          '<span class="badge"><b>' +
+          b.n_assets +
+          "</b> trucks</span>" +
+          '<span class="badge"><b>' +
+          b.date_min +
+          "</b> → <b>" +
+          b.date_max +
+          "</b></span>" +
+          '<span class="badge">Target: <b>Logistics_Delay</b></span>';
 
-  // 1. Status donut
-  var statusColors = { "Delayed": danger, "Delivered": accent2, "In Transit": accent };
-  draw("chart-status", [{
-    type: "pie", hole: 0.62,
-    labels: D.status_distribution.map(function (d) { return d.label; }),
-    values: D.status_distribution.map(function (d) { return d.value; }),
-    marker: { colors: D.status_distribution.map(function (d) { return statusColors[d.label] || accent; }) },
-    textinfo: "label+percent", textfont: { color: text, size: 12 },
-    hovertemplate: "%{label}: %{value} (%{percent})<extra></extra>"
-  }], { showlegend: false, margin: { l: 10, r: 10, t: 10, b: 10 } });
+        // ---------- KPI cards ----------
+        var k = D.kpis;
+        var kpis = [
+          {
+            label: "On-time rate",
+            value: pct(k.on_time_rate),
+            sub: 1 - k.on_time_rate >= 0.5 ? "below target" : "on target",
+            color: accent2,
+          },
+          {
+            label: "Delay rate",
+            value: pct(k.delay_rate),
+            sub: "566 of 1,000 shipments",
+            color: danger,
+          },
+          {
+            label: "Avg waiting time",
+            value: k.avg_waiting_min.toFixed(1) + " min",
+            sub: "per shipment",
+            color: warn,
+          },
+          {
+            label: "Avg asset utilization",
+            value: k.avg_utilization.toFixed(1) + "%",
+            sub: "across 10 trucks",
+            color: accent,
+          },
+          {
+            label: "Avg inventory level",
+            value: Math.round(k.avg_inventory).toLocaleString(),
+            sub: "units held",
+            color: purple,
+          },
+          {
+            label: "Best model (acc.)",
+            value: pct(k.best_model_accuracy),
+            sub: k.best_model_name,
+            color: accent2,
+          },
+        ];
+        document.getElementById("kpi-grid").innerHTML = kpis
+          .map(function (c) {
+            return (
+              '<div class="kpi" style="--kpi-color:' +
+              c.color +
+              '">' +
+              '<div class="label">' +
+              c.label +
+              "</div>" +
+              '<div class="value">' +
+              c.value +
+              "</div>" +
+              '<div class="sub">' +
+              c.sub +
+              "</div></div>"
+            );
+          })
+          .join("");
 
-  // 2. Delay rate by truck
-  var trucks = D.asset_by_truck.slice().reverse();
-  draw("chart-asset", [{
-    type: "bar", orientation: "h",
-    x: trucks.map(function (d) { return d.delay_rate * 100; }),
-    y: trucks.map(function (d) { return d.asset.replace("Truck_", "Truck "); }),
-    marker: { color: trucks.map(function (d) { return d.delay_rate >= 0.6 ? danger : accent; }) },
-    text: trucks.map(function (d) { return (d.delay_rate * 100).toFixed(1) + "%"; }),
-    textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{y}: %{x:.1f}% delay rate (%{customdata[0]} delays / %{customdata[1]} trips)<extra></extra>",
-    customdata: trucks.map(function (d) { return [d.delays, d.trips]; })
-  }], { xaxis: { ticksuffix: "%", range: [0, 78], gridcolor: grid } });
+        // ---------- Chart helpers ----------
+        function draw(id, data, layout) {
+          var merged = JSON.parse(JSON.stringify(baseLayout));
+          for (var key in layout) merged[key] = layout[key];
+          Plotly.newPlot(id, data, merged, {
+            displayModeBar: false,
+            responsive: true,
+          });
+        }
 
-  // 3. Delay reasons
-  var reasons = D.delay_reasons;
-  var reasonColors = { "Weather": accent, "Traffic": warn, "Mechanical Failure": danger, "No recorded reason": muted };
-  draw("chart-reasons", [{
-    type: "bar",
-    x: reasons.map(function (d) { return d.reason; }),
-    y: reasons.map(function (d) { return d.delays; }),
-    marker: { color: reasons.map(function (d) { return reasonColors[d.reason] || accent; }) },
-    text: reasons.map(function (d) { return d.delays; }), textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{x}: %{y} delayed shipments<extra></extra>"
-  }], { xaxis: { tickangle: 0 }, yaxis: { title: "delayed shipments" } });
+        // 1. Status donut
+        var statusColors = {
+          Delayed: danger,
+          Delivered: accent2,
+          "In Transit": accent,
+        };
+        draw(
+          "chart-status",
+          [
+            {
+              type: "pie",
+              hole: 0.62,
+              labels: D.status_distribution.map(function (d) {
+                return d.label;
+              }),
+              values: D.status_distribution.map(function (d) {
+                return d.value;
+              }),
+              marker: {
+                colors: D.status_distribution.map(function (d) {
+                  return statusColors[d.label] || accent;
+                }),
+              },
+              textinfo: "label+percent",
+              textfont: { color: text, size: 12 },
+              hovertemplate: "%{label}: %{value} (%{percent})<extra></extra>",
+            },
+          ],
+          { showlegend: false, margin: { l: 10, r: 10, t: 10, b: 10 } },
+        );
 
-  // 4. Monthly trend
-  draw("chart-monthly", [{
-    type: "scatter", mode: "lines+markers",
-    x: D.monthly_trend.map(function (d) { return d.month; }),
-    y: D.monthly_trend.map(function (d) { return d.delay_rate * 100; }),
-    line: { color: accent, width: 2.5 }, marker: { size: 7, color: accent },
-    fill: "tozeroy", fillcolor: "rgba(56,189,248,0.10)",
-    hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>"
-  }], { xaxis: { gridcolor: grid }, yaxis: { ticksuffix: "%", range: [0, 80], gridcolor: grid } });
+        // 2. Delay rate by truck
+        var trucks = D.asset_by_truck.slice().reverse();
+        draw(
+          "chart-asset",
+          [
+            {
+              type: "bar",
+              orientation: "h",
+              x: trucks.map(function (d) {
+                return d.delay_rate * 100;
+              }),
+              y: trucks.map(function (d) {
+                return d.asset.replace("Truck_", "Truck ");
+              }),
+              marker: {
+                color: trucks.map(function (d) {
+                  return d.delay_rate >= 0.6 ? danger : accent;
+                }),
+              },
+              text: trucks.map(function (d) {
+                return (d.delay_rate * 100).toFixed(1) + "%";
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate:
+                "%{y}: %{x:.1f}% delay rate (%{customdata[0]} delays / %{customdata[1]} trips)<extra></extra>",
+              customdata: trucks.map(function (d) {
+                return [d.delays, d.trips];
+              }),
+            },
+          ],
+          { xaxis: { ticksuffix: "%", range: [0, 78], gridcolor: grid } },
+        );
 
-  // 5. Traffic impact
-  var traffic = D.traffic_impact;
-  draw("chart-traffic", [{
-    type: "bar",
-    x: traffic.map(function (d) { return d.status; }),
-    y: traffic.map(function (d) { return d.delay_rate * 100; }),
-    marker: { color: traffic.map(function (d) { return d.delay_rate >= 0.9 ? danger : accent; }) },
-    text: traffic.map(function (d) { return (d.delay_rate * 100).toFixed(1) + "%"; }),
-    textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>"
-  }], { yaxis: { ticksuffix: "%", range: [0, 110], gridcolor: grid } });
+        // 3. Delay reasons
+        var reasons = D.delay_reasons;
+        var reasonColors = {
+          Weather: accent,
+          Traffic: warn,
+          "Mechanical Failure": danger,
+          "No recorded reason": muted,
+        };
+        draw(
+          "chart-reasons",
+          [
+            {
+              type: "bar",
+              x: reasons.map(function (d) {
+                return d.reason;
+              }),
+              y: reasons.map(function (d) {
+                return d.delays;
+              }),
+              marker: {
+                color: reasons.map(function (d) {
+                  return reasonColors[d.reason] || accent;
+                }),
+              },
+              text: reasons.map(function (d) {
+                return d.delays;
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate: "%{x}: %{y} delayed shipments<extra></extra>",
+            },
+          ],
+          { xaxis: { tickangle: 0 }, yaxis: { title: "delayed shipments" } },
+        );
 
-  // 6. Temperature impact
-  var temp = D.temperature_impact;
-  draw("chart-temp", [{
-    type: "bar",
-    x: temp.map(function (d) { return d.bucket; }),
-    y: temp.map(function (d) { return d.delay_rate * 100; }),
-    marker: { color: temp.map(function (d) { return d.delay_rate >= 0.58 ? warn : accent; }) },
-    text: temp.map(function (d) { return (d.delay_rate * 100).toFixed(1) + "%"; }),
-    textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>"
-  }], { xaxis: { tickangle: 0 }, yaxis: { ticksuffix: "%", range: [0, 75], gridcolor: grid } });
+        // 4. Monthly trend
+        draw(
+          "chart-monthly",
+          [
+            {
+              type: "scatter",
+              mode: "lines+markers",
+              x: D.monthly_trend.map(function (d) {
+                return d.month;
+              }),
+              y: D.monthly_trend.map(function (d) {
+                return d.delay_rate * 100;
+              }),
+              line: { color: accent, width: 2.5 },
+              marker: { size: 7, color: accent },
+              fill: "tozeroy",
+              fillcolor: "rgba(56,189,248,0.10)",
+              hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>",
+            },
+          ],
+          {
+            xaxis: { gridcolor: grid },
+            yaxis: { ticksuffix: "%", range: [0, 80], gridcolor: grid },
+          },
+        );
 
-  // 7. Humidity impact
-  var hum = D.humidity_impact;
-  draw("chart-hum", [{
-    type: "bar",
-    x: hum.map(function (d) { return d.bucket; }),
-    y: hum.map(function (d) { return d.delay_rate * 100; }),
-    marker: { color: accent },
-    text: hum.map(function (d) { return (d.delay_rate * 100).toFixed(1) + "%"; }),
-    textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>"
-  }], { yaxis: { ticksuffix: "%", range: [0, 75], gridcolor: grid } });
+        // 5. Traffic impact
+        var traffic = D.traffic_impact;
+        draw(
+          "chart-traffic",
+          [
+            {
+              type: "bar",
+              x: traffic.map(function (d) {
+                return d.status;
+              }),
+              y: traffic.map(function (d) {
+                return d.delay_rate * 100;
+              }),
+              marker: {
+                color: traffic.map(function (d) {
+                  return d.delay_rate >= 0.9 ? danger : accent;
+                }),
+              },
+              text: traffic.map(function (d) {
+                return (d.delay_rate * 100).toFixed(1) + "%";
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>",
+            },
+          ],
+          { yaxis: { ticksuffix: "%", range: [0, 110], gridcolor: grid } },
+        );
 
-  // 8. Model comparison
-  var models = D.model_results;
-  var metricDefs = [
-    { key: "accuracy", label: "Accuracy" },
-    { key: "precision", label: "Precision" },
-    { key: "recall", label: "Recall" },
-    { key: "f1", label: "F1" },
-    { key: "auc", label: "AUC-ROC" }
-  ];
-  var modelColors = [accent, accent2, warn, purple];
-  var modelData = metricDefs.map(function (m, i) {
-    return {
-      type: "bar", name: m.label,
-      x: models.map(function (d) { return d.name; }),
-      y: models.map(function (d) { return d[m.key]; }),
-      marker: { color: models.map(function (d, j) { return modelColors[j]; }), opacity: 0.35 + 0.65 * (i / metricDefs.length) },
-      text: models.map(function (d) { return (d[m.key] * 100).toFixed(1); }),
-      textposition: "outside", cliponaxis: false,
-      hovertemplate: "%{x} · " + m.label + ": %{y:.3f}<extra></extra>"
-    };
-  });
-  draw("chart-models", modelData, { barmode: "group", yaxis: { range: [0, 1.05], tickformat: ".0%", gridcolor: grid }, xaxis: { tickangle: -12 }, legend: { orientation: "h", y: 1.12 } });
+        // 6. Temperature impact
+        var temp = D.temperature_impact;
+        draw(
+          "chart-temp",
+          [
+            {
+              type: "bar",
+              x: temp.map(function (d) {
+                return d.bucket;
+              }),
+              y: temp.map(function (d) {
+                return d.delay_rate * 100;
+              }),
+              marker: {
+                color: temp.map(function (d) {
+                  return d.delay_rate >= 0.58 ? warn : accent;
+                }),
+              },
+              text: temp.map(function (d) {
+                return (d.delay_rate * 100).toFixed(1) + "%";
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>",
+            },
+          ],
+          {
+            xaxis: { tickangle: 0 },
+            yaxis: { ticksuffix: "%", range: [0, 75], gridcolor: grid },
+          },
+        );
 
-  // 9. Feature importance
-  var feats = D.feature_importance;
-  var featureNames = {
-    "Traffic_Status_Encoded": "Traffic Status",
-    "Latitude": "Latitude", "Longitude": "Longitude",
-    "Asset_Utilization": "Asset Utilization", "Humidity": "Humidity",
-    "Temperature": "Temperature", "Demand_Forecast": "Demand Forecast",
-    "Inventory_Level": "Inventory Level", "Waiting_Time": "Waiting Time",
-    "User_Transaction_Amount": "Transaction Amount", "Hour": "Hour of day",
-    "Day": "Day of month", "Asset_ID_Encoded": "Asset (Truck)",
-    "Month": "Month", "User_Purchase_Frequency": "Purchase Frequency",
-    "DayOfWeek": "Day of week", "Season": "Season"
-  };
-  var featDisp = feats.slice(0, 12).reverse();
-  draw("chart-features", [{
-    type: "bar", orientation: "h",
-    x: featDisp.map(function (d) { return d.importance; }),
-    y: featDisp.map(function (d) { return featureNames[d.feature] || d.feature; }),
-    marker: { color: featDisp.map(function (d, i) { return i === featDisp.length - 1 ? danger : accent; }) },
-    text: featDisp.map(function (d) { return d.importance.toFixed(3); }),
-    textposition: "outside", cliponaxis: false,
-    hovertemplate: "%{y}: %{x:.4f} importance<extra></extra>"
-  }], { xaxis: { title: "importance", gridcolor: grid } });
+        // 7. Humidity impact
+        var hum = D.humidity_impact;
+        draw(
+          "chart-hum",
+          [
+            {
+              type: "bar",
+              x: hum.map(function (d) {
+                return d.bucket;
+              }),
+              y: hum.map(function (d) {
+                return d.delay_rate * 100;
+              }),
+              marker: { color: accent },
+              text: hum.map(function (d) {
+                return (d.delay_rate * 100).toFixed(1) + "%";
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate: "%{x}: %{y:.1f}% delay rate<extra></extra>",
+            },
+          ],
+          { yaxis: { ticksuffix: "%", range: [0, 75], gridcolor: grid } },
+        );
 
-  // Traffic insight callout
-  var heavy = D.traffic_impact.filter(function (d) { return d.status === "Heavy"; })[0];
-  var heavyRate = heavy ? (heavy.delay_rate * 100).toFixed(0) : "100";
-  document.getElementById('traffic-insight').innerHTML =
-    "<b>Headline insight:</b> when traffic is <b>Heavy</b>, every shipment in this dataset was delayed (" + heavyRate + "% delay rate), versus ~35% under Clear/Detour. " +
-    "Traffic management is the single highest-leverage lever for reducing delays.";
+        // 8. Model comparison
+        var models = D.model_results;
+        var metricDefs = [
+          { key: "accuracy", label: "Accuracy" },
+          { key: "precision", label: "Precision" },
+          { key: "recall", label: "Recall" },
+          { key: "f1", label: "F1" },
+          { key: "auc", label: "AUC-ROC" },
+        ];
+        var modelColors = [accent, accent2, warn, purple];
+        var modelData = metricDefs.map(function (m, i) {
+          return {
+            type: "bar",
+            name: m.label,
+            x: models.map(function (d) {
+              return d.name;
+            }),
+            y: models.map(function (d) {
+              return d[m.key];
+            }),
+            marker: {
+              color: models.map(function (d, j) {
+                return modelColors[j];
+              }),
+              opacity: 0.35 + 0.65 * (i / metricDefs.length),
+            },
+            text: models.map(function (d) {
+              return (d[m.key] * 100).toFixed(1);
+            }),
+            textposition: "outside",
+            cliponaxis: false,
+            hovertemplate: "%{x} · " + m.label + ": %{y:.3f}<extra></extra>",
+          };
+        });
+        draw("chart-models", modelData, {
+          barmode: "group",
+          yaxis: { range: [0, 1.05], tickformat: ".0%", gridcolor: grid },
+          xaxis: { tickangle: -12 },
+          legend: { orientation: "h", y: 1.12 },
+        });
 
-  // ROI cards (illustrative)
-  var roi = [
-    { label: "Current annual loss", value: "$2.4M", sub: "from delays" },
-    { label: "Potential savings", value: "$1.5M", sub: "with optimization" },
-    { label: "Implementation cost", value: "$350K", sub: "one-time" },
-    { label: "Net annual benefit", value: "$1.15M", sub: "Year-1 ROI ~328%" }
-  ];
-  document.getElementById('roi-grid').innerHTML = roi.map(function (c) {
-    return '<div class="kpi"><div class="label">' + c.label + '</div>' +
-      '<div class="value" style="font-size:22px">' + c.value + '</div>' +
-      '<div class="sub">' + c.sub + '</div></div>';
-  }).join('');
+        // 9. Feature importance
+        var feats = D.feature_importance;
+        var featureNames = {
+          Traffic_Status_Encoded: "Traffic Status",
+          Latitude: "Latitude",
+          Longitude: "Longitude",
+          Asset_Utilization: "Asset Utilization",
+          Humidity: "Humidity",
+          Temperature: "Temperature",
+          Demand_Forecast: "Demand Forecast",
+          Inventory_Level: "Inventory Level",
+          Waiting_Time: "Waiting Time",
+          User_Transaction_Amount: "Transaction Amount",
+          Hour: "Hour of day",
+          Day: "Day of month",
+          Asset_ID_Encoded: "Asset (Truck)",
+          Month: "Month",
+          User_Purchase_Frequency: "Purchase Frequency",
+          DayOfWeek: "Day of week",
+          Season: "Season",
+        };
+        var featDisp = feats.slice(0, 12).reverse();
+        draw(
+          "chart-features",
+          [
+            {
+              type: "bar",
+              orientation: "h",
+              x: featDisp.map(function (d) {
+                return d.importance;
+              }),
+              y: featDisp.map(function (d) {
+                return featureNames[d.feature] || d.feature;
+              }),
+              marker: {
+                color: featDisp.map(function (d, i) {
+                  return i === featDisp.length - 1 ? danger : accent;
+                }),
+              },
+              text: featDisp.map(function (d) {
+                return d.importance.toFixed(3);
+              }),
+              textposition: "outside",
+              cliponaxis: false,
+              hovertemplate: "%{y}: %{x:.4f} importance<extra></extra>",
+            },
+          ],
+          { xaxis: { title: "importance", gridcolor: grid } },
+        );
 
-  // Recommendations
-  var recs = [
-    { title: "Traffic & route optimization", text: "Deploy real-time re-routing and prioritize routes flagged Heavy. This is the top driver of delay and the model's strongest signal." },
-    { title: "Preventive maintenance", text: "Mechanical failure causes 133 delayed shipments. Schedule maintenance by asset utilization, focusing on the worst-performing trucks." },
-    { title: "Weather-aware scheduling", text: "Weather is the #1 recorded delay reason (151). Integrate forecasting to pre-emptively adjust routes and buffers." },
-    { title: "Seasonal capacity planning", text: "June (66%) and July (63%) peak. Add temporary capacity during high-delay months." },
-    { title: "Improve data capture", text: "26% of delayed shipments have no recorded reason. Closing this gap sharpens root-cause and model accuracy." },
-    { title: "Deploy the model", text: "Ship a leakage-free delay-risk model (Random Forest, 0.79 AUC) to flag high-risk shipments before dispatch." }
-  ];
-  document.getElementById('rec-grid').innerHTML = recs.map(function (r) {
-    return '<div class="rec"><h4>' + r.title + '</h4><p>' + r.text + '</p></div>';
-  }).join('');
-})();
-</script>
-</body>
+        // Traffic insight callout
+        var heavy = D.traffic_impact.filter(function (d) {
+          return d.status === "Heavy";
+        })[0];
+        var heavyRate = heavy ? (heavy.delay_rate * 100).toFixed(0) : "100";
+        document.getElementById("traffic-insight").innerHTML =
+          "<b>Headline insight:</b> when traffic is <b>Heavy</b>, every shipment in this dataset was delayed (" +
+          heavyRate +
+          "% delay rate), versus ~35% under Clear/Detour. " +
+          "Traffic management is the single highest-leverage lever for reducing delays.";
+
+        // ROI cards (illustrative)
+        var roi = [
+          { label: "Current annual loss", value: "$2.4M", sub: "from delays" },
+          {
+            label: "Potential savings",
+            value: "$1.5M",
+            sub: "with optimization",
+          },
+          { label: "Implementation cost", value: "$350K", sub: "one-time" },
+          {
+            label: "Net annual benefit",
+            value: "$1.15M",
+            sub: "Year-1 ROI ~328%",
+          },
+        ];
+        document.getElementById("roi-grid").innerHTML = roi
+          .map(function (c) {
+            return (
+              '<div class="kpi"><div class="label">' +
+              c.label +
+              "</div>" +
+              '<div class="value" style="font-size:22px">' +
+              c.value +
+              "</div>" +
+              '<div class="sub">' +
+              c.sub +
+              "</div></div>"
+            );
+          })
+          .join("");
+
+        // Recommendations
+        var recs = [
+          {
+            title: "Traffic & route optimization",
+            text: "Deploy real-time re-routing and prioritize routes flagged Heavy. This is the top driver of delay and the model's strongest signal.",
+          },
+          {
+            title: "Preventive maintenance",
+            text: "Mechanical failure causes 133 delayed shipments. Schedule maintenance by asset utilization, focusing on the worst-performing trucks.",
+          },
+          {
+            title: "Weather-aware scheduling",
+            text: "Weather is the #1 recorded delay reason (151). Integrate forecasting to pre-emptively adjust routes and buffers.",
+          },
+          {
+            title: "Seasonal capacity planning",
+            text: "June (66%) and July (63%) peak. Add temporary capacity during high-delay months.",
+          },
+          {
+            title: "Improve data capture",
+            text: "26% of delayed shipments have no recorded reason. Closing this gap sharpens root-cause and model accuracy.",
+          },
+          {
+            title: "Deploy the model",
+            text: "Ship a leakage-free delay-risk model (Random Forest, 0.79 AUC) to flag high-risk shipments before dispatch.",
+          },
+        ];
+        document.getElementById("rec-grid").innerHTML = recs
+          .map(function (r) {
+            return (
+              '<div class="rec"><h4>' +
+              r.title +
+              "</h4><p>" +
+              r.text +
+              "</p></div>"
+            );
+          })
+          .join("");
+      })();
+    </script>
+  </body>
 </html>
