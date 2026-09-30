@@ -303,6 +303,20 @@ js = "window.SMART_LOGISTICS_DATA = " + json.dumps(payload, indent=2) + ";\n"
 with open(OUT, "w", encoding="utf-8") as f:
     f.write(js)
 
+# Inject the payload inline into index.html so the dashboard is fully
+# self-contained (a single copyable file for GitHub Pages / any static host).
+INDEX = "dashboard/index.html"
+compact_json = json.dumps(payload)
+with open(INDEX, encoding="utf-8") as f:
+    html = f.read()
+if "__SMART_LOGISTICS_DATA_PAYLOAD__" in html:
+    html = html.replace("__SMART_LOGISTICS_DATA_PAYLOAD__", compact_json)
+    with open(INDEX, "w", encoding="utf-8") as f:
+        f.write(html)
+    print(f"injected inline data into {INDEX}")
+else:
+    print(f"WARNING: marker not found in {INDEX} — index.html was NOT updated")
+
 # quick sanity printout
 print(f"wrote {OUT}")
 print(f"records={total_records} assets={n_assets} range={date_min}..{date_max}")

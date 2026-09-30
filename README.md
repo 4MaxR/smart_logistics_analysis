@@ -29,7 +29,7 @@
 # Smart Logistics Data Analysis
 ## A Comprehensive Analysis of Supply Chain Delays
 
-> **Live dashboard:** [`dashboard/index.html`](dashboard/index.html) — an interactive HTML dashboard built from this analysis. Open it in any browser (works offline; Plotly.js is bundled locally).
+> **Live dashboard:** [`dashboard/index.html`](dashboard/index.html) — a fully self-contained, single-file interactive dashboard (data embedded inline, Plotly.js with CDN fallback). Copy that one file to any static host (e.g. GitHub Pages) and it works as-is.
 
 ## Navigation
 
@@ -338,10 +338,10 @@ smart_logistics_analysis/
 │       └── smart_logistics_dataset.csv
 │
 ├── dashboard/
-│   ├── index.html        # interactive HTML dashboard (open this)
-│   ├── data.js           # recomputed metrics (generated)
-│   ├── plotly.min.js     # bundled Plotly.js (offline-capable)
-│   └── build_data.py     # regenerates data.js from the raw CSV
+│   ├── index.html        # self-contained interactive dashboard (data inlined — copy this)
+│   ├── build_data.py     # recomputes metrics + injects them into index.html
+│   ├── data.js           # generated (gitignored) — standalone JSON reference
+│   └── plotly.min.js     # optional (gitignored) — offline Plotly.js copy
 │
 ├── excel/
 │   └── smart_logistics_dataset.xlsx
