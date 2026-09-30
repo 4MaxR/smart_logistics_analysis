@@ -7,6 +7,7 @@
 # ================================================================
 
 import json
+import re
 import numpy as np
 import pandas as pd
 
@@ -303,19 +304,32 @@ js = "window.SMART_LOGISTICS_DATA = " + json.dumps(payload, indent=2) + ";\n"
 with open(OUT, "w", encoding="utf-8") as f:
     f.write(js)
 
-# Inject the payload inline into index.html so the dashboard is fully
-# self-contained (a single copyable file for GitHub Pages / any static host).
-INDEX = "dashboard/index.html"
+# Inject the payload inline into both the dashboard index.html and the
+# repo-root index.html (served by GitHub Pages), keeping both self-contained
+# and in sync. Persistent delimiter markers let re-runs replace data in place.
 compact_json = json.dumps(payload)
-with open(INDEX, encoding="utf-8") as f:
-    html = f.read()
-if "__SMART_LOGISTICS_DATA_PAYLOAD__" in html:
-    html = html.replace("__SMART_LOGISTICS_DATA_PAYLOAD__", compact_json)
-    with open(INDEX, "w", encoding="utf-8") as f:
+BEGIN = "/*__SMART_DATA_BEGIN__*/"
+END = "/*__SMART_DATA_END__*/"
+pat = re.compile(re.escape(BEGIN) + r".*?" + re.escape(END), re.DOTALL)
+
+for target in ("dashboard/index.html", "index.html"):
+    try:
+        with open(target, encoding="utf-8") as f:
+            html = f.read()
+    except FileNotFoundError:
+        print(f"skipping {target}: not found")
+        continue
+    repl = BEGIN + compact_json + END
+    if pat.search(html):
+        html = pat.sub(lambda m: repl, html)
+    elif "__SMART_LOGISTICS_DATA_PAYLOAD__" in html:
+        html = html.replace("__SMART_LOGISTICS_DATA_PAYLOAD__", compact_json)
+    else:
+        print(f"WARNING: no data marker found in {target}; not updated")
+        continue
+    with open(target, "w", encoding="utf-8") as f:
         f.write(html)
-    print(f"injected inline data into {INDEX}")
-else:
-    print(f"WARNING: marker not found in {INDEX} — index.html was NOT updated")
+    print(f"injected inline data into {target}")
 
 # quick sanity printout
 print(f"wrote {OUT}")
