@@ -29,7 +29,7 @@
 # Smart Logistics Data Analysis
 ## A Comprehensive Analysis of Supply Chain Delays
 
-> **Live dashboard:** [`dashboard/index.html`](dashboard/index.html) — a fully self-contained, single-file interactive dashboard (data embedded inline, Plotly.js with CDN fallback). Copy that one file to any static host (e.g. GitHub Pages) and it works as-is.
+> **Live dashboard:** [`Dashboard`](https://4maxr.github.io/smart_logistics_analysis/) — a fully self-contained, single-file interactive dashboard (data embedded inline, Plotly.js with CDN fallback). Copy that one file to any static host (e.g. GitHub Pages) and it works as-is.
 
 ## Navigation
 
