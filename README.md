@@ -365,4 +365,5 @@ smart_logistics_analysis/
 └── uv.lock
 ```
 
-This analysis was conducted as part of a supply chain optimization initiative. The findings and recommendations are based on comprehensive data analysis and predictive modeling of 1,000 logistics events throughout 2024.
+This analysis was conducted as part of a supply chain optimization initiative. The findings and recommendations are based on comprehensive data analysis and predictive modeling of over 1,000 logistics events throughout 2024.
+
